@@ -5,5 +5,5 @@
 (defpackage cl-binary-location
   (:use :common-lisp)
   (:export
-      *location*))
+      :location))
 
