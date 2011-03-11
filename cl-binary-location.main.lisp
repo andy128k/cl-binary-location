@@ -33,8 +33,24 @@
       (when (/= 0 (get-module-file-name (cffi:null-pointer) location 256))
         (cffi:foreign-string-to-lisp location)))))
 
+;;
+;; Darwin
+;;
+
+#+darwin
+(progn
+
+  (cffi:defcfun (ns-get-executable-path "_NSGetExecutablePath") :int
+    (buf :pointer)
+    (bufsize :pointer))
+
+  (defun location ()
+    (cffi:with-foreign-objects ((location :char 1024) (size :uint32))
+      (setf (cffi:mem-ref size :uint32) 1024)
+      (when (= 0 (ns-get-executable-path location size))
+        (cffi:foreign-string-to-lisp location)))))
+
 ;; error
 
-#-(or linux windows)
+#-(or linux windows darwin)
 (error "Unsupported platform/implementation.")
-
